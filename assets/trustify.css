@@ -1,12 +1,42 @@
 :root {
+  /* Default Dark Theme (Modern, black-based sleek design) */
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --surface-elevated: #1e1e1e;
+  --border: #262626;
+  --border-strong: #333333;
+  --text: #f5f5f5;
+  --text-muted: #a3a3a3;
+  --text-subtle: #8a8a8a;
+  --accent: #6366f1;
+  --accent-hover: #818cf8;
+  --accent-soft: rgba(99, 102, 241, 0.1);
+  --accent-ring: rgba(99, 102, 241, 0.3);
+  --success: #10b981;
+  --error: #ef4444;
+  --error-bg: rgba(239, 68, 68, 0.1);
+  --code-bg: #000000;
+  --bg-gradient-1: rgba(99, 102, 241, 0.15);
+  --bg-gradient-2: rgba(124, 58, 237, 0.1);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  --max-width: 920px;
+}
+
+.light-theme {
   --bg: #f4f6fb;
   --surface: #ffffff;
   --surface-elevated: #ffffff;
   --border: #e2e8f0;
   --border-strong: #cbd5e1;
   --text: #0f172a;
-  --text-muted: #64748b;
-  --text-subtle: #94a3b8;
+  --text-muted: #475569;
+  --text-subtle: #64748b;
   --accent: #4f46e5;
   --accent-hover: #4338ca;
   --accent-soft: #eef2ff;
@@ -15,14 +45,23 @@
   --error: #dc2626;
   --error-bg: #fef2f2;
   --code-bg: #0f172a;
+  --bg-gradient-1: rgba(79, 70, 229, 0.12);
+  --bg-gradient-2: rgba(99, 102, 241, 0.06);
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
   --shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
   --shadow-lg: 0 12px 40px rgba(15, 23, 42, 0.08);
-  --radius: 12px;
-  --radius-lg: 16px;
-  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
-  --max-width: 920px;
+}
+
+/* Smooth transitions */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 0.3s ease, 
+              border-color 0.3s ease, 
+              color 0.3s ease, 
+              box-shadow 0.3s ease,
+              background-image 0.3s ease !important;
 }
 
 *,
@@ -44,8 +83,8 @@ body {
   color: var(--text);
   background: var(--bg);
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(79, 70, 229, 0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(99, 102, 241, 0.06), transparent);
+    radial-gradient(ellipse 80% 50% at 50% -20%, var(--bg-gradient-1), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, var(--bg-gradient-2), transparent);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -66,8 +105,16 @@ a:hover {
   top: 0;
   z-index: 100;
   backdrop-filter: blur(12px);
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--header-bg, rgba(10, 10, 10, 0.8));
   border-bottom: 1px solid var(--border);
+}
+
+:root {
+  --header-bg: rgba(10, 10, 10, 0.8);
+}
+
+.light-theme {
+  --header-bg: rgba(255, 255, 255, 0.85);
 }
 
 .site-header__inner {
@@ -88,12 +135,49 @@ a:hover {
   letter-spacing: -0.02em;
   color: var(--text);
   text-decoration: none;
+  flex: 1;
 }
 
 .site-logo:hover {
   text-decoration: none;
   color: var(--text);
 }
+
+/* Theme Toggle Button */
+.theme-toggle {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+}
+
+.theme-toggle .sun-icon { display: block; }
+.theme-toggle .moon-icon { display: none; }
+
+.light-theme .theme-toggle .sun-icon { display: none; }
+.light-theme .theme-toggle .moon-icon { display: block; }
 
 .site-logo__mark {
   width: 32px;
@@ -345,7 +429,7 @@ h6.apk-header-item {
   gap: 0.5rem;
   padding: 1rem 1.25rem;
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(to bottom, #fafbfc, var(--surface));
+  background: linear-gradient(to bottom, var(--surface-elevated), var(--surface));
 }
 
 .analysis-card__header h4 {
