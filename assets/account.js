@@ -5,6 +5,7 @@
 (function() {
     const STORAGE_KEY_USER = 'trustify_user';
     const STORAGE_KEY_HISTORY = 'trustify_history';
+    const STORAGE_KEY_GEMINI_API_KEY = 'trustify_gemini_api_key';
 
     const accountManager = {
         user: null,
@@ -44,6 +45,31 @@
             }
         },
 
+        getGeminiApiKey() {
+            try {
+                return localStorage.getItem(STORAGE_KEY_GEMINI_API_KEY) || '';
+            } catch (e) {
+                return '';
+            }
+        },
+
+        saveGeminiApiKey(apiKey) {
+            const key = apiKey ? apiKey.trim() : '';
+            try {
+                if (key) {
+                    localStorage.setItem(STORAGE_KEY_GEMINI_API_KEY, key);
+                } else {
+                    localStorage.removeItem(STORAGE_KEY_GEMINI_API_KEY);
+                }
+                this.renderGeminiKeyState();
+                window.dispatchEvent(new CustomEvent('trustify:gemini-key-updated'));
+                return true;
+            } catch (e) {
+                alert('Could not save Gemini API key in this browser.');
+                return false;
+            }
+        },
+
         addScanToHistory(appData) {
             const securitySummary = appData && appData.securitySummary ? appData.securitySummary : null;
             const scanEntry = {
@@ -77,6 +103,7 @@
             if (confirm('Are you sure you want to delete your account and all scan history? This action cannot be undone.')) {
                 localStorage.removeItem(STORAGE_KEY_USER);
                 localStorage.removeItem(STORAGE_KEY_HISTORY);
+                localStorage.removeItem(STORAGE_KEY_GEMINI_API_KEY);
                 window.location.reload();
             }
         },
@@ -92,6 +119,22 @@
         updateUI() {
             const userNameElements = document.querySelectorAll('.display-user-name');
             userNameElements.forEach(el => el.textContent = this.user ? this.user.name : 'Guest');
+            this.renderGeminiKeyState();
+        },
+
+        renderGeminiKeyState() {
+            const keyInput = document.getElementById('gemini-api-key-input');
+            const keyStatus = document.getElementById('gemini-key-status');
+            const hasKey = !!this.getGeminiApiKey();
+            if (keyInput) {
+                keyInput.value = '';
+                keyInput.placeholder = hasKey ? 'Saved locally' : 'Optional API key';
+            }
+            if (keyStatus) {
+                keyStatus.textContent = hasKey
+                    ? 'Gemini key saved locally. Save an empty value to remove it.'
+                    : 'Used only in this browser for the explainable assistant.';
+            }
         },
 
         renderHistory(filter = '') {
@@ -177,6 +220,20 @@
             const deleteAccountBtn = document.getElementById('delete-account-btn');
             if (deleteAccountBtn) {
                 deleteAccountBtn.addEventListener('click', () => this.deleteAccount());
+            }
+
+            const saveGeminiKeyBtn = document.getElementById('save-gemini-key-btn');
+            const geminiKeyInput = document.getElementById('gemini-api-key-input');
+            if (saveGeminiKeyBtn && geminiKeyInput) {
+                saveGeminiKeyBtn.addEventListener('click', () => {
+                    this.saveGeminiApiKey(geminiKeyInput.value);
+                });
+                geminiKeyInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.saveGeminiApiKey(geminiKeyInput.value);
+                    }
+                });
             }
 
             const editNameBtn = document.getElementById('edit-name-btn');

@@ -15,6 +15,7 @@
     <script src="/assets/theme.js"></script>
     <script src="/assets/account.js"></script>
     <script src="/assets/security.js"></script>
+    <script src="/assets/chatbot.js"></script>
 </head>
 <body id="top">
 
@@ -266,6 +267,18 @@
             </div>
             
             <div class="account-section">
+                <h4>Gemini Assistant</h4>
+                <div class="api-key-control">
+                    <label for="gemini-api-key-input">Gemini API key</label>
+                    <div class="api-key-row">
+                        <input type="password" id="gemini-api-key-input" placeholder="Optional API key">
+                        <button id="save-gemini-key-btn" class="btn-secondary" type="button">Save</button>
+                    </div>
+                    <p id="gemini-key-status" class="field-note">Used only in this browser for the explainable assistant.</p>
+                </div>
+            </div>
+
+            <div class="account-section">
                 <h4>Scan History</h4>
                 <div class="search-box">
                     <input type="text" id="history-search" placeholder="Search apps...">
@@ -280,6 +293,34 @@
                 <button id="delete-account-btn" class="btn-danger">Delete Account Data</button>
             </div>
         </div>
+    </div>
+
+    <div id="ai-chatbot" class="ai-chatbot">
+        <button id="ai-chatbot-toggle" class="ai-chatbot__toggle" type="button" aria-label="Open explainable assistant" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path><path d="M8 9h8"></path><path d="M8 13h5"></path></svg>
+        </button>
+        <section id="ai-chatbot-panel" class="ai-chatbot__panel" aria-label="Explainable APK assistant" hidden>
+            <div class="ai-chatbot__header">
+                <div>
+                    <h3>Explainable Assistant</h3>
+                    <span>Gemini 2.5 Flash</span>
+                </div>
+                <button id="ai-chatbot-close" class="close-btn" type="button" aria-label="Close assistant">&times;</button>
+            </div>
+            <div id="ai-chatbot-messages" class="ai-chatbot__messages" aria-live="polite"></div>
+            <form id="ai-chatbot-key-form" class="ai-chatbot__key-form">
+                <label for="ai-chatbot-key">Gemini API key</label>
+                <div class="api-key-row">
+                    <input id="ai-chatbot-key" type="password" autocomplete="off" placeholder="Paste key to enable chat">
+                    <button class="btn-secondary" type="submit">Use</button>
+                </div>
+                <p class="field-note">Optional setup. The key is saved locally in this browser.</p>
+            </form>
+            <form id="ai-chatbot-form" class="ai-chatbot__form">
+                <textarea id="ai-chatbot-input" rows="2" placeholder="Ask about permissions, findings, or the manifest..." aria-label="Message the explainable assistant"></textarea>
+                <button id="ai-chatbot-send" class="btn-primary" type="submit">Send</button>
+            </form>
+        </section>
     </div>
 
     <script src="/assets/0db6e59bc64d6e7bda7ce32006004539.js"></script>
