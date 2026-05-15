@@ -210,18 +210,11 @@ a:hover {
 .light-theme .theme-toggle .sun-icon { display: none; }
 .light-theme .theme-toggle .moon-icon { display: block; }
 
-.site-logo__mark {
+.site-logo__image {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 0.875rem;
-  font-weight: 800;
-  box-shadow: 0 2px 8px var(--accent-ring);
+  object-fit: contain;
 }
 
 .site-logo__badge {
@@ -521,7 +514,7 @@ h6.apk-header-item {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin: 0 1.25rem 1rem;
+  padding: 1.25rem;
 }
 
 #but-load-strings {
@@ -753,10 +746,46 @@ h6.apk-header-item {
 .site-footer {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 1.5rem 2rem;
+  padding: 0 1.5rem 3rem;
   text-align: center;
   font-size: 0.8125rem;
   color: var(--text-subtle);
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.footer-content p {
+  margin: 0;
+}
+
+.creator-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+}
+
+.creator-links a {
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.creator-links a:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.footer-icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
 }
 
 /* Responsive */
