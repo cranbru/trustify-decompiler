@@ -45,12 +45,14 @@
         },
 
         addScanToHistory(appData) {
+            const securitySummary = appData && appData.securitySummary ? appData.securitySummary : null;
             const scanEntry = {
                 id: Date.now(),
                 timestamp: new Date().toISOString(),
                 name: appData.appLabel || 'Unknown App',
                 packageName: appData.packageName || 'unknown.package',
-                status: 'Completed'
+                status: 'Completed',
+                security: securitySummary
             };
             
             this.history.unshift(scanEntry); // Add to beginning (chronological)
@@ -106,6 +108,13 @@
                 return;
             }
 
+            const riskPill = (security) => {
+                if (!security || !security.level) return '';
+                const level = security.level.toLowerCase();
+                const score = typeof security.score === 'number' ? security.score : '';
+                return `<span class="security-pill security-pill--${level}">${security.level}${score !== '' ? ` · ${score}` : ''}</span>`;
+            };
+
             historyContainer.innerHTML = filteredHistory.map(item => `
                 <div class="history-item">
                     <div class="history-item__info">
@@ -114,6 +123,7 @@
                     </div>
                     <div class="history-item__meta">
                         <span class="history-item__date">${new Date(item.timestamp).toLocaleDateString()}</span>
+                        ${riskPill(item.security)}
                         <span class="history-item__status status-${item.status.toLowerCase()}">${item.status}</span>
                     </div>
                 </div>

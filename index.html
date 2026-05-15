@@ -14,6 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.5/highlight.min.js"></script>
     <script src="/assets/theme.js"></script>
     <script src="/assets/account.js"></script>
+    <script src="/assets/security.js"></script>
 </head>
 <body id="top">
 
@@ -146,6 +147,25 @@
                     <span class="info-tooltip" title="When an app wants to access resources or various device capabilities, it often has to request permissions from the user. Some permissions are granted at install time while others need confirmation at runtime. These are declared in the app AndroidManifest.xml file.">?</span>
                 </div>
                 <div class="analysis-card__body apk-item" id="permissions-list" style="display:none;"></div>
+            </article>
+
+            <article class="analysis-card" id="security-card" style="display:none;">
+                <div class="analysis-card__header">
+                    <h4>Security Findings</h4>
+                    <span class="info-tooltip" title="Heuristic security checks based on the decoded manifest and requested permissions. Results are local-only and meant as a quick triage, not a definitive verdict.">?</span>
+                </div>
+                <div class="analysis-card__body">
+                    <div class="security-summary">
+                        <div class="security-score">
+                            <span class="security-score__label">Risk</span>
+                            <span id="security-score-value" class="security-score__value">0</span>
+                            <span id="security-score-level" class="security-pill security-pill--low">Low</span>
+                        </div>
+                        <div id="security-counts" class="security-counts">0 high · 0 medium · 0 low</div>
+                        <input id="security-search" class="security-search" type="text" placeholder="Search findings..." aria-label="Search security findings">
+                    </div>
+                    <div id="security-findings" class="security-findings"></div>
+                </div>
             </article>
 
             <article class="analysis-card">
