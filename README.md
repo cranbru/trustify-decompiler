@@ -9,6 +9,24 @@ A private, client-side APK analyzer. Inspect Android applications directly in yo
 - **Resource Extraction**: Read and extract `AndroidManifest.xml` and string resources.
 - **Modern UI**: Sleek, minimalist design with native dark/light mode support.
 
+## Screenshots
+
+### Main landing
+
+![Main landing](Main_landing.png)
+
+### Basic info
+
+![Basic info](<Basic%20Info.png>)
+
+### Permissions
+
+![Permissions](Permission.png)
+
+### Android manifest
+
+![Android manifest](Andriod_Manifest.png)
+
 ## How it works
 
 Trustify uses a WebAssembly-compiled engine to parse APK files on the fly. It leverages your browser's local processing power to handle binary XML decoding and resource extraction without needing a backend.
