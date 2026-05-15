@@ -1,158 +1,173 @@
-<!DOCTYPE html>
-<html lang="">
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Trustify</title>
+    <title>Trustify — APK Analyzer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Analyze Android APK files locally in your browser. No uploads, fully private.">
     <link rel="icon" type="image/png" href="/logo.png">
-    <style>
-        body {
-            background-color: rgb(255, 255, 255);
-            color: rgb(255, 255, 255);
-        }
-        .info-tooltip {
-            cursor: help;
-            display: inline-block;
-            font-size: 0.8em;
-            vertical-align: middle;
-            position: relative;
-        }
-        .info-tooltip:hover::after {
-            content: attr(title);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 400px;
-            padding: 12px 20px;
-            background: #333;
-            color: #fff;
-            border-radius: 6px;
-            font-size: 0.9em;
-            line-height: 1.5;
-            max-width: 90vw;
-            word-wrap: break-word;
-            white-space: normal;
-            z-index: 1000;
-            text-align: left;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-    </style>
-
-                                                    
-                        <link href="/assets/845eff9c4872108314934c028ca32ec9.css?g-d1a76b11" type="text/css" rel="stylesheet">
-
-
-                                            <script src="/assets/efa380e68426c2eaf3d759128f23fd72.js?g-d1a76b11"></script>
-<script>
-/* GA tracking blocked, reason: Do Not Track header sent by the client */
-</script>
-
-<script>
-hljs.initHighlightingOnLoad();
-</script>
-
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/trustify.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.5/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.5/highlight.min.js"></script>
 </head>
-<body id="top" class="">
-     
-    <div id="sb-site">
-                <header id="header">
-            <div id="logo">
-                <h3><a href="/">Trustify</a></h3>
-            </div>
-            <div id="navbar">
-                                                                
-            </li>
-                    </ul>
+<body id="top">
 
-                                <span class="panel-activation sb-toggle-left navbar-left menu-btn fa fa-bars"></span>
-            </div>
+    <header class="site-header">
+        <div class="site-header__inner">
+            <a href="/" class="site-logo">
+                <span class="site-logo__mark" aria-hidden="true">T</span>
+                Trustify
+            </a>
+            <span class="site-logo__badge">Local · Private</span>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <section class="hero">
+            <h1 class="hero__title">Fake Banking App Detector</h1>
+            <p class="hero__subtitle">Drop an APK to inspect permissions, components, manifest, and metadata — processed entirely in your browser.</p>
+            <p class="hero__privacy">100% client-side · nothing leaves your device</p>
+        </section>
+
+        <div id="apk-tool-loader" style="display:none;" aria-live="polite">
+            <div class="loader-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        </div>
+
+        <div id="select-files-section">
+            <label for="file-input">
+                Drop APK here or click to select
+                <span class="upload-hint">Supports .apk files</span>
+            </label>
+            <input id="file-input" type="file" name="file-name" accept=".apk, .APK" style="display: none;" />
+        </div>
+
+        <div id="file-name" style="display:none;"></div>
+        <div id="apk-tool-error" style="display:none;" role="alert"></div>
+
+        <header id="label-icon-section">
+            <img id="app-icon" style="display:none;" alt="App icon" />
+            <h2 id="app-label" style="display:none;"></h2>
         </header>
-        
-        
-                <section id="body" class="">
-            		        
-		
-		<div class="blog-content-item grid pure-g-r">
-			<div id="item" class="block pure-u-2-3">
-			    <div class="list-item">
 
-                
-    <div class="list-blog-header">
-                    <h3><a href="/apk-tool">Trustify-Fake Banking App Detector</a></h3>
-        
-               
-        
-        
+        <div class="metadata-grid">
+            <div class="metadata-item">
+                <h6 id="package-name-title" class="apk-header-item" style="display:none;">Package name</h6>
+                <div id="package-name" style="display:none;"></div>
+            </div>
+            <div class="metadata-item">
+                <h6 id="version-code-title" class="apk-header-item" style="display:none;">versionCode</h6>
+                <div id="version-code" class="apk-header-item" style="display:none;"></div>
+            </div>
+            <div class="metadata-item">
+                <h6 id="version-name-title" class="apk-header-item" style="display:none;">versionName</h6>
+                <div id="version-name" class="apk-header-item" style="display:none;"></div>
+            </div>
+            <div class="metadata-item">
+                <h6 id="supported-abis-title" class="apk-header-item" style="display:none;">Supported ABIs</h6>
+                <div id="supported-abis" class="apk-header-item" style="display:none;"></div>
+            </div>
+            <div class="metadata-item">
+                <h6 id="min-sdk-title" class="apk-header-item" style="display:none;">Minimal supported Android version</h6>
+                <div id="min-sdk" class="apk-header-item" style="display:none;"></div>
+            </div>
+            <div class="metadata-item">
+                <h6 id="target-sdk-title" class="apk-header-item" style="display:none;">Target SDK</h6>
+                <div id="target-sdk" class="apk-header-item" style="display:none;"></div>
+            </div>
+            <div class="metadata-item">
+                <h6 id="used-tech-title" class="apk-header-item" style="display:none;">Used Technologies &amp; Frameworks</h6>
+                <div id="used-tech" class="apk-header-item" style="display:none;"></div>
+            </div>
+            <div class="metadata-item">
+                <h6 id="split-apk-title" class="apk-header-item" style="display:none;">Split APK</h6>
+                <div id="split-apk" class="apk-header-item" style="display:none;"></div>
+            </div>
+            <div class="metadata-item">
+                <h6 id="native-libs-title" class="apk-header-item" style="display:none;">Native libraries</h6>
+                <div id="native-libs" class="apk-header-item" style="display:none;"></div>
+            </div>
+        </div>
+
+        <div class="analysis-sections">
+            <article class="analysis-card">
+                <div class="analysis-card__header">
+                    <h4>Activities</h4>
+                    <span class="info-tooltip" title="Activities are the basic application components that provide an interface to the user - a single screen that can host UI elements. An application usually provides one or more activities and allows the user to navigate between each of them.">?</span>
+                </div>
+                <div class="analysis-card__body apk-item" id="activities-list" style="display:none;"></div>
+            </article>
+
+            <article class="analysis-card">
+                <div class="analysis-card__header">
+                    <h4>Services</h4>
+                    <span class="info-tooltip" title="Services are application components that are mostly used for background processing tasks, for example, playing music, downloading files, or performing some time consuming computation.">?</span>
+                </div>
+                <div class="analysis-card__body apk-item" id="services-list" style="display:none;"></div>
+            </article>
+
+            <article class="analysis-card">
+                <div class="analysis-card__header">
+                    <h4>Broadcast Receivers</h4>
+                    <span class="info-tooltip" title="Broadcast Receivers respond to system-wide broadcast announcements. They let the system deliver events to apps even when they are not running. They allow exchange of events between app components or different apps, using Intents to deliver these events.">?</span>
+                </div>
+                <div class="analysis-card__body apk-item" id="receivers-list" style="display:none;"></div>
+            </article>
+
+            <article class="analysis-card">
+                <div class="analysis-card__header">
+                    <h4>Content Providers</h4>
+                    <span class="info-tooltip" title="Content providers allow an Android app to manage and share data. They provide a unified interface for managing app data which allows to use an URI scheme to map URI to data items.">?</span>
+                </div>
+                <div class="analysis-card__body apk-item" id="providers-list" style="display:none;"></div>
+            </article>
+
+            <article class="analysis-card">
+                <div class="analysis-card__header">
+                    <h4>Requested Permissions</h4>
+                    <span class="info-tooltip" title="When an app wants to access resources or various device capabilities, it often has to request permissions from the user. Some permissions are granted at install time while others need confirmation at runtime. These are declared in the app AndroidManifest.xml file.">?</span>
+                </div>
+                <div class="analysis-card__body apk-item" id="permissions-list" style="display:none;"></div>
+            </article>
+
+            <article class="analysis-card">
+                <div class="analysis-card__header">
+                    <h4>AndroidManifest.xml</h4>
+                    <span class="info-tooltip" title="The Android manifest contains important information about the app used by development tools, Android system, and app stores. It includes the app package name, version, components, permissions, and other metadata. It is serialized into binary XML format in the APK.">?</span>
+                </div>
+                <div class="code-block">
+                    <pre id="manifest-pre" style="display:none;"><code style="display:none;" id="android-manifest" class="language-xml hljs"></code></pre>
+                </div>
+            </article>
+
+            <article class="analysis-card">
+                <div class="analysis-card__header">
+                    <h4>String Resources</h4>
+                    <span class="info-tooltip" title="String resources store text used in the app, often localized for different languages. They are stored in XML files within the APK and can be referenced throughout the app code and layouts.">?</span>
+                </div>
+                <button id="but-load-strings" style="display:none;" type="button">Extract strings</button>
+                <div class="code-block">
+                    <pre id="strings-pre" style="display:none;"><code style="display:none;" id="values-strings" class="language-xml hljs"></code></pre>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        Trustify — client-side APK analysis powered by WebAssembly
+    </footer>
+
+    <div class="emscripten-panel">
+        <figure style="overflow:visible;" id="spinner">
+            <div class="spinner"></div>
+            <center style="margin-top:0.5em"><strong>APK Tool</strong></center>
+        </figure>
+        <progress value="0" max="100" id="progress" hidden></progress>
+        <div class="emscripten" id="status" hidden>Downloading...</div>
     </div>
 
-    <div class="list-blog-padding">
-<div id="apk-tool-loader" style="display:none;"></div>
-<div id="select-files-section"> 
-<label for="file-input"> Drop APK here or click to select file</label>
-<input id="file-input" type="file" name="file-name" accept=".apk, .APK" style="display: none;" />
-</div>
-<div id="file-name" style="display:none;"></div>
-<div id="apk-tool-error" style="display:none;"></div>
-<header id="label-icon-section">
-<img id="app-icon" style="display:none;"/>
-<h5 id="app-label" style="display:none;"></h5>
-</header>
-<h6 id="package-name-title" class="apk-header-item" style="display:none;">Package name</h6>
-<div id="package-name" style="display:none;"></div>
-<h6 id="version-code-title" class="apk-header-item" style="display:none;">versionCode</h6>
-<div id="version-code" class="apk-header-item" style="display:none;"></div>
-<h6 id="version-name-title" class="apk-header-item" style="display:none;">versionName</h6>
-<div id="version-name" class="apk-header-item" style="display:none;"></div>
-<h6 id="supported-abis-title" class="apk-header-item" style="display:none;">Supported ABIs</h6>
-<div id="supported-abis" class="apk-header-item" style="display:none;"></div>
-<h6 id="native-libs-title" class="apk-header-item" style="display:none;">Native libraries</h6>
-<div id="native-libs" class="apk-header-item" style="display:none;"></div>
-<h6 id="min-sdk-title" class="apk-header-item" style="display:none;">Minimal supported Android version</h6>
-<div id="min-sdk" class="apk-header-item" style="display:none;"></div>
-<h6 id="target-sdk-title" class="apk-header-item" style="display:none;">Target SDK</h6>
-<div id="target-sdk" class="apk-header-item" style="display:none;"></div>
-<h6 id="used-tech-title" class="apk-header-item" style="display:none;">Used Technologies & Frameworks</h6>
-<div id="used-tech" class="apk-header-item" style="display:none;"></div>
-<h6 id="split-apk-title" class="apk-header-item" style="display:none;">Split APK</h6>
-<div id="split-apk" class="apk-header-item" style="display:none;"></div>
-<h4>Activities <span class="info-tooltip" title="Activities are the basic application components that provide an interface to the user - a single screen that can host UI elements. An application usually provides one or more activities and allows the user to navigate between each of them.">ℹ️</span></h4>
-<div class="apk-item" id="activities-list" style="display:none;"></div>
-<h4>Services <span class="info-tooltip" title="Services are application components that are mostly used for background processing tasks, for example, playing music, downloading files, or performing some time consuming computation.">ℹ️</span></h4>
-<div class="apk-item" id="services-list" style="display:none;"></div>
-<h4>Broadcast Receivers <span class="info-tooltip" title="Broadcast Receivers respond to system-wide broadcast announcements. They let the system deliver events to apps even when they're not running. They allow exchange of events between app components or different apps, using Intents to deliver these events.">ℹ️</span></h4>
-<div class="apk-item" id="receivers-list" style="display:none;"></div>
-<h4>Content Providers <span class="info-tooltip" title="Content providers allow an Android app to manage and share data. They provide a unified interface for managing app's data which allows to use an URI scheme to map URI to data items.">ℹ️</span></h4>
-<div class="apk-item" id="providers-list" style="display:none;"></div>
-<h4>Requested Permissions <span class="info-tooltip" title="When an app wants to access resources or various device capabilities, it often has to request permissions from the user. Some permissions are granted at install time while others need confirmation at runtime. These are declared in the app's AndroidManifest.xml file.">ℹ️</span></h4>
-<div class="apk-item" id="permissions-list" style="display:none;"></div>
-<h4>AndroidManifest.xml <span class="info-tooltip" title="The Android manifest contains important information about the app used by development tools, Android system, and app stores. It includes the app's package name, version, components, permissions, and other metadata. It's serialized into binary XML format in the APK.">ℹ️</span></h4>
-<pre id="manifest-pre" style="display:none;"><code style="display:none;" id="android-manifest" class="language-xml hljs"></code></pre>
-<h4>String Resources <span class="info-tooltip" title="String resources store text used in the app, often localized for different languages. They're stored in XML files within the APK and can be referenced throughout the app's code and layouts. The text is often localized to multiple languages.">ℹ️</span></h4>
-<button id="but-load-strings" style="display:none;">Extract strings</button>
-<pre id="strings-pre" style="display:none;"><code style="display:none;" id="values-strings" class="language-xml hljs"></code></pre>    
-<!-- Emscripted progress and status handling -->
-<progress value="0" max="100" id="progress" hidden=1></progress>  
-<figure style="overflow:visible;" id="spinner"><div class="spinner"></div><center style="margin-top:0.5em"><strong>APK Tool</strong></center></figure>
-<div class="emscripten" id="status" hidden=1>Downloading...</div>
-
-          <script src="/assets/0db6e59bc64d6e7bda7ce32006004539.js?g-d1a76b11"></script>
-
-        <script>
-        $(function () {
-            $(document).ready(function() {
-              $.slidebars({
-                hideControlClasses: true,
-                scrollLock: true
-              });
-            });
-        });
-        </script>      
-        
-        
+    <script src="/assets/0db6e59bc64d6e7bda7ce32006004539.js"></script>
 </body>
-    
 </html>
-
-
