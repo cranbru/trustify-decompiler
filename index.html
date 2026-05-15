@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.5/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.5/highlight.min.js"></script>
     <script src="/assets/theme.js"></script>
+    <script src="/assets/account.js"></script>
 </head>
 <body id="top">
 
@@ -23,14 +24,20 @@
                 Trustify
             </a>
             <span class="site-logo__badge">Local · Private</span>
-            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
-                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-                </svg>
-                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-                </svg>
-            </button>
+            <div class="header-actions">
+                <button id="account-toggle" class="header-btn" aria-label="Account">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span class="display-user-name">Guest</span>
+                </button>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                    </svg>
+                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                    </svg>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -190,6 +197,50 @@
         </figure>
         <progress value="0" max="100" id="progress" hidden></progress>
         <div class="emscripten" id="status" hidden>Downloading...</div>
+    </div>
+
+    <div id="user-setup-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content glass">
+            <h3>Welcome to Trustify</h3>
+            <p>Please enter your display name to get started. All data is stored locally in your browser.</p>
+            <form id="user-setup-form">
+                <input type="text" id="user-name-input" placeholder="Your Name" required maxlength="20">
+                <button type="submit" class="btn-primary">Start Analyzing</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="account-panel" class="side-panel glass">
+        <div class="side-panel__header">
+            <h3>Account & History</h3>
+            <button id="close-account-panel" class="close-btn">&times;</button>
+        </div>
+        <div class="side-panel__body">
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                <div class="user-info">
+                    <span class="display-user-name">Guest</span>
+                    <button id="edit-name-btn" class="text-btn">Edit Name</button>
+                </div>
+            </div>
+            
+            <div class="account-section">
+                <h4>Scan History</h4>
+                <div class="search-box">
+                    <input type="text" id="history-search" placeholder="Search apps...">
+                </div>
+                <div id="scan-history-list" class="history-list">
+                    <!-- History items will be injected here -->
+                </div>
+            </div>
+
+            <div class="account-actions">
+                <button id="clear-history-btn" class="btn-secondary">Clear History</button>
+                <button id="delete-account-btn" class="btn-danger">Delete Account Data</button>
+            </div>
+        </div>
     </div>
 
     <script src="/assets/0db6e59bc64d6e7bda7ce32006004539.js"></script>
