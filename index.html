@@ -156,7 +156,13 @@
                     <h4>String Resources</h4>
                     <span class="info-tooltip" title="String resources store text used in the app, often localized for different languages. They are stored in XML files within the APK and can be referenced throughout the app code and layouts.">?</span>
                 </div>
-                <button id="but-load-strings" style="display:none;" type="button">Extract strings</button>
+                <div class="analysis-card__actions">
+                    <button id="but-load-strings" style="display:none;" type="button">Extract strings</button>
+                    <div id="strings-loader" class="inline-loader" style="display:none;" role="status" aria-live="polite">
+                        <div class="spinner-sm" aria-hidden="true"></div>
+                        <span class="loader-text">This takes some time...</span>
+                    </div>
+                </div>
                 <div class="code-block">
                     <pre id="strings-pre" style="display:none;"><code style="display:none;" id="values-strings" class="language-xml hljs"></code></pre>
                 </div>
