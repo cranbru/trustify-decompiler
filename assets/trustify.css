@@ -531,6 +531,13 @@ h6.apk-header-item {
   min-width: 0;
 }
 
+.security-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .security-score__label {
   font-size: 0.75rem;
   font-weight: 700;
@@ -620,6 +627,39 @@ h6.apk-header-item {
   margin-top: 1.25rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--border);
+}
+
+.signature-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.signature-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-elevated);
+}
+
+.signature-row__label {
+  color: var(--text-subtle);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+
+.signature-row__value {
+  color: var(--text);
+  font-size: 0.8125rem;
+  font-family: var(--mono);
+  word-break: break-word;
+  text-align: right;
 }
 
 .security-subheader {
@@ -1313,6 +1353,12 @@ h6.apk-header-item {
   background: var(--border);
 }
 
+.btn-primary:disabled, .btn-secondary:disabled, .btn-danger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .btn-danger {
   background: var(--error-bg);
   color: var(--error);
@@ -1401,6 +1447,15 @@ h6.apk-header-item {
 
   .security-summary {
     grid-template-columns: 1fr;
+  }
+
+  .signature-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .signature-row__value {
+    text-align: left;
   }
 
   .app-main {

@@ -161,8 +161,19 @@
                             <span id="security-score-value" class="security-score__value">0</span>
                             <span id="security-score-level" class="security-pill security-pill--low">Low</span>
                         </div>
+                        <div class="security-actions">
+                            <button id="download-security-report" class="btn-secondary" type="button">Download report</button>
+                            <button id="download-security-pdf" class="btn-secondary" type="button">Download PDF</button>
+                        </div>
                         <div id="security-counts" class="security-counts">0 high · 0 medium · 0 low</div>
                         <input id="security-search" class="security-search" type="text" placeholder="Search findings..." aria-label="Search security findings">
+                    </div>
+                    <div class="security-subsection">
+                        <div class="security-subheader">
+                            <h5>Signature</h5>
+                            <span id="signature-summary" class="security-counts"></span>
+                        </div>
+                        <div id="signature-details" class="signature-details"></div>
                     </div>
                     <div id="security-findings" class="security-findings"></div>
                     <div class="security-subsection">
