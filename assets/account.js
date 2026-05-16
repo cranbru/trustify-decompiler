@@ -74,6 +74,7 @@
                 }
                 this.renderGeminiKeyState();
                 window.dispatchEvent(new CustomEvent('trustify:gemini-key-updated'));
+                this.updateVisibleApiKeyReminder();
                 return true;
             } catch (e) {
                 alert('Could not save Gemini API key in this browser.');
@@ -91,6 +92,7 @@
                 }
                 this.renderVirusTotalKeyState();
                 window.dispatchEvent(new CustomEvent('trustify:virustotal-key-updated'));
+                this.updateVisibleApiKeyReminder();
                 return true;
             } catch (e) {
                 alert('Could not save VirusTotal API key in this browser.');
@@ -182,6 +184,70 @@
             }
         },
 
+        getMissingApiKeys() {
+            const missing = [];
+            if (!this.getVirusTotalApiKey()) missing.push('VirusTotal');
+            if (!this.getGeminiApiKey()) missing.push('Gemini');
+            return missing;
+        },
+
+        showApiKeySetupModal() {
+            const modal = document.getElementById('api-key-setup-modal');
+            if (modal) modal.style.display = 'flex';
+        },
+
+        hideApiKeySetupModal() {
+            const modal = document.getElementById('api-key-setup-modal');
+            if (modal) modal.style.display = 'none';
+        },
+
+        openAccountPanel() {
+            const accountPanel = document.getElementById('account-panel');
+            if (accountPanel) accountPanel.classList.add('active');
+        },
+
+        showApiKeyReminder() {
+            const missing = this.getMissingApiKeys();
+            const reminder = document.getElementById('api-key-reminder');
+            const message = document.getElementById('api-key-reminder-message');
+            if (!reminder || missing.length === 0) return;
+            if (message) {
+                const label = missing.length === 2 ? 'VirusTotal and Gemini API keys' : missing[0] + ' API key';
+                message.textContent = 'Add your ' + label + ' to get hash reputation and assistant support for this APK.';
+            }
+            reminder.hidden = false;
+        },
+
+        hideApiKeyReminder() {
+            const reminder = document.getElementById('api-key-reminder');
+            if (reminder) reminder.hidden = true;
+        },
+
+        updateVisibleApiKeyReminder() {
+            const reminder = document.getElementById('api-key-reminder');
+            if (!reminder || reminder.hidden) return;
+            if (this.getMissingApiKeys().length === 0) this.hideApiKeyReminder();
+            else this.showApiKeyReminder();
+        },
+
+        saveSetupApiKeys() {
+            const geminiInput = document.getElementById('setup-gemini-api-key-input');
+            const virusTotalInput = document.getElementById('setup-virustotal-api-key-input');
+            const geminiValue = geminiInput ? geminiInput.value : '';
+            const virusTotalValue = virusTotalInput ? virusTotalInput.value : '';
+            let saved = true;
+
+            if (geminiValue.trim()) saved = this.saveGeminiApiKey(geminiValue) && saved;
+            if (virusTotalValue.trim()) saved = this.saveVirusTotalApiKey(virusTotalValue) && saved;
+
+            if (saved) {
+                if (geminiInput) geminiInput.value = '';
+                if (virusTotalInput) virusTotalInput.value = '';
+                this.hideApiKeySetupModal();
+                if (this.getMissingApiKeys().length === 0) this.hideApiKeyReminder();
+            }
+        },
+
         renderHistory(filter = '') {
             const historyContainer = document.getElementById('scan-history-list');
             if (!historyContainer) return;
@@ -227,8 +293,22 @@
                     const nameInput = document.getElementById('user-name-input');
                     if (this.saveUser(nameInput.value)) {
                         document.getElementById('user-setup-modal').style.display = 'none';
+                        if (this.getMissingApiKeys().length > 0) this.showApiKeySetupModal();
                     }
                 });
+            }
+
+            const apiKeySetupForm = document.getElementById('api-key-setup-form');
+            if (apiKeySetupForm) {
+                apiKeySetupForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveSetupApiKeys();
+                });
+            }
+
+            const skipApiKeySetupBtn = document.getElementById('skip-api-key-setup-btn');
+            if (skipApiKeySetupBtn) {
+                skipApiKeySetupBtn.addEventListener('click', () => this.hideApiKeySetupModal());
             }
 
             // Account toggle
@@ -238,6 +318,29 @@
                 accountBtn.addEventListener('click', () => {
                     accountPanel.classList.toggle('active');
                 });
+            }
+
+            const fileInput = document.getElementById('file-input');
+            if (fileInput) {
+                fileInput.addEventListener('change', () => this.showApiKeyReminder());
+            }
+
+            const fileSection = document.getElementById('select-files-section');
+            if (fileSection) {
+                fileSection.addEventListener('drop', () => this.showApiKeyReminder());
+            }
+
+            const reminderAction = document.getElementById('api-key-reminder-action');
+            if (reminderAction) {
+                reminderAction.addEventListener('click', () => {
+                    this.openAccountPanel();
+                    this.hideApiKeySetupModal();
+                });
+            }
+
+            const reminderClose = document.getElementById('api-key-reminder-close');
+            if (reminderClose) {
+                reminderClose.addEventListener('click', () => this.hideApiKeyReminder());
             }
 
             // Close panel
@@ -272,11 +375,13 @@
             if (saveGeminiKeyBtn && geminiKeyInput) {
                 saveGeminiKeyBtn.addEventListener('click', () => {
                     this.saveGeminiApiKey(geminiKeyInput.value);
+                    if (this.getMissingApiKeys().length === 0) this.hideApiKeyReminder();
                 });
                 geminiKeyInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
                         this.saveGeminiApiKey(geminiKeyInput.value);
+                        if (this.getMissingApiKeys().length === 0) this.hideApiKeyReminder();
                     }
                 });
             }
@@ -286,11 +391,13 @@
             if (saveVirusTotalKeyBtn && virusTotalKeyInput) {
                 saveVirusTotalKeyBtn.addEventListener('click', () => {
                     this.saveVirusTotalApiKey(virusTotalKeyInput.value);
+                    if (this.getMissingApiKeys().length === 0) this.hideApiKeyReminder();
                 });
                 virusTotalKeyInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
                         this.saveVirusTotalApiKey(virusTotalKeyInput.value);
+                        if (this.getMissingApiKeys().length === 0) this.hideApiKeyReminder();
                     }
                 });
             }

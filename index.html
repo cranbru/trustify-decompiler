@@ -260,6 +260,34 @@
         </div>
     </div>
 
+    <div id="api-key-setup-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-content modal-content--wide glass">
+            <h3>Add analysis keys</h3>
+            <p>Optional keys unlock VirusTotal hash checks and the Gemini assistant. They stay in this browser.</p>
+            <form id="api-key-setup-form">
+                <label class="modal-field" for="setup-gemini-api-key-input">
+                    <span>Gemini API key</span>
+                    <input type="password" id="setup-gemini-api-key-input" placeholder="Optional">
+                </label>
+                <label class="modal-field" for="setup-virustotal-api-key-input">
+                    <span>VirusTotal API key</span>
+                    <input type="password" id="setup-virustotal-api-key-input" placeholder="Optional">
+                </label>
+                <div class="modal-actions">
+                    <button type="button" id="skip-api-key-setup-btn" class="btn-secondary">Skip</button>
+                    <button type="submit" class="btn-primary">Save Keys</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="api-key-reminder" class="api-key-reminder" role="status" aria-live="polite" hidden>
+        <button id="api-key-reminder-close" class="api-key-reminder__close" type="button" aria-label="Dismiss API key reminder">&times;</button>
+        <strong>API keys missing</strong>
+        <p id="api-key-reminder-message">Add keys to unlock full analysis.</p>
+        <button id="api-key-reminder-action" class="btn-secondary" type="button">Add keys</button>
+    </div>
+
     <div id="account-panel" class="side-panel glass">
         <div class="side-panel__header">
             <h3>Account & History</h3>

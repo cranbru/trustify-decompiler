@@ -1191,6 +1191,10 @@ h6.apk-header-item {
   text-align: center;
 }
 
+.modal-content--wide {
+  max-width: 460px;
+}
+
 .modal-content h3 {
   margin: 0 0 0.75rem;
   font-size: 1.25rem;
@@ -1223,6 +1227,77 @@ h6.apk-header-item {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  text-align: left;
+}
+
+.modal-field span {
+  color: var(--text-subtle);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.api-key-reminder {
+  position: fixed;
+  top: 5rem;
+  right: 1rem;
+  z-index: 1450;
+  width: min(360px, calc(100vw - 2rem));
+  padding: 1rem 1rem 1rem 1.125rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+}
+
+.api-key-reminder[hidden] {
+  display: none;
+}
+
+.api-key-reminder strong {
+  display: block;
+  padding-right: 1.5rem;
+  color: var(--text);
+  font-size: 0.9375rem;
+}
+
+.api-key-reminder p {
+  margin: 0.35rem 0 0.85rem;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.api-key-reminder__close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.65rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.api-key-reminder__close:hover {
+  color: var(--text);
 }
 
 .glass {

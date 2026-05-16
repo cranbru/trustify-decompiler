@@ -37,8 +37,14 @@
   }
 
   function ensureUi() {
+    ui.card = $("security-card");
     ui.summary = $("virustotal-summary");
     ui.details = $("virustotal-details");
+  }
+
+  function showVirusTotalPanel() {
+    ensureUi();
+    if (ui.card) ui.card.style.display = "block";
   }
 
   function shortHash(hash) {
@@ -61,7 +67,7 @@
   }
 
   function renderMessage(summary, message, hash) {
-    ensureUi();
+    showVirusTotalPanel();
     if (ui.summary) ui.summary.textContent = summary;
     if (!ui.details) return;
     ui.details.innerHTML =
@@ -72,7 +78,7 @@
   }
 
   function renderLoading(hash) {
-    ensureUi();
+    showVirusTotalPanel();
     if (ui.summary) ui.summary.textContent = "Checking...";
     if (!ui.details) return;
     ui.details.innerHTML =
@@ -105,7 +111,7 @@
   }
 
   function renderReport(hash, data) {
-    ensureUi();
+    showVirusTotalPanel();
     var attrs = (data && data.data && data.data.attributes) || {};
     var stats = attrs.last_analysis_stats || {};
     var malicious = stats.malicious || 0;
@@ -202,7 +208,7 @@
   }
 
   function renderError(hash, message) {
-    ensureUi();
+    showVirusTotalPanel();
     if (ui.summary) ui.summary.textContent = "Unavailable";
     if (!ui.details) return;
     ui.details.innerHTML =
@@ -279,13 +285,19 @@
     lastCheckedHash = "";
     currentResult = null;
     isChecking = false;
-    renderMessage("Not checked", "Add a VirusTotal API key in Account & History to check this APK hash.");
+    ensureUi();
+    if (ui.card) ui.card.style.display = "none";
+    if (ui.summary) ui.summary.textContent = "Not checked";
+    if (ui.details) {
+      ui.details.innerHTML = "<div class='security-empty'>Add a VirusTotal API key in Account &amp; History to check this APK hash.</div>";
+    }
   }
 
   function patchSecurityScanner() {
     if (!window.SecurityScanner || window.SecurityScanner.__virusTotalPatched) return;
     var originalRender = window.SecurityScanner.render;
     var originalReset = window.SecurityScanner.reset;
+    var originalComputeSignature = window.SecurityScanner.computeSignature;
 
     window.SecurityScanner.render = function () {
       var value = originalRender.apply(window.SecurityScanner, arguments);
@@ -300,6 +312,19 @@
       reset();
       return value;
     };
+
+    if (typeof originalComputeSignature === "function") {
+      window.SecurityScanner.computeSignature = function () {
+        var signaturePromise = originalComputeSignature.apply(window.SecurityScanner, arguments);
+        if (signaturePromise && typeof signaturePromise.then === "function") {
+          signaturePromise.then(function (signature) {
+            var hash = signature && signature.apkSha256 ? signature.apkSha256 : "";
+            if (hash) lookup(hash, false);
+          }).catch(function () {});
+        }
+        return signaturePromise;
+      };
+    }
 
     window.SecurityScanner.__virusTotalPatched = true;
   }
