@@ -662,6 +662,117 @@ h6.apk-header-item {
   text-align: right;
 }
 
+.virustotal-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.virustotal-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-elevated);
+  padding: 0.875rem;
+}
+
+.virustotal-card__header,
+.virustotal-score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.virustotal-card__header {
+  justify-content: flex-start;
+}
+
+.virustotal-card__header strong,
+.virustotal-score strong {
+  display: block;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.virustotal-card__header span,
+.virustotal-meta span,
+.virustotal-grid span,
+.virustotal-detections > span {
+  color: var(--text-subtle);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.virustotal-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.virustotal-grid > div,
+.virustotal-meta > div,
+.virustotal-detections > div {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 0.625rem;
+}
+
+.virustotal-grid strong,
+.virustotal-meta strong,
+.virustotal-detections strong {
+  display: block;
+  margin-top: 0.125rem;
+  color: var(--text);
+  font-size: 0.875rem;
+  word-break: break-word;
+}
+
+.virustotal-meta,
+.virustotal-detections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.virustotal-detections > span {
+  grid-column: 1 / -1;
+}
+
+.virustotal-detections > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.virustotal-detections > div span {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  text-align: right;
+}
+
+.virustotal-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.virustotal-actions a {
+  text-decoration: none;
+}
+
+.virustotal-hash {
+  margin-top: 0.5rem;
+  color: var(--text-subtle);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  word-break: break-word;
+}
+
 .security-subheader {
   display: flex;
   align-items: baseline;
@@ -1905,6 +2016,12 @@ h6.apk-header-item {
   }
 
   .security-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .virustotal-grid,
+  .virustotal-meta,
+  .virustotal-detections {
     grid-template-columns: 1fr;
   }
 

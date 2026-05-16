@@ -15,6 +15,7 @@
     <script src="/assets/theme.js"></script>
     <script src="/assets/account.js"></script>
     <script src="/assets/security.js"></script>
+    <script src="/assets/virustotal.js"></script>
     <script src="/assets/chatbot.js"></script>
 </head>
 <body id="top">
@@ -176,6 +177,15 @@
                         </div>
                         <div id="signature-details" class="signature-details"></div>
                     </div>
+                    <div class="security-subsection" id="virustotal-section">
+                        <div class="security-subheader">
+                            <h5>VirusTotal</h5>
+                            <span id="virustotal-summary" class="security-counts">Not checked</span>
+                        </div>
+                        <div id="virustotal-details" class="virustotal-details">
+                            <div class="security-empty">Add a VirusTotal API key in Account &amp; History to check this APK hash.</div>
+                        </div>
+                    </div>
                     <div id="security-findings" class="security-findings"></div>
                     <div class="security-subsection">
                         <div class="security-subheader">
@@ -275,6 +285,18 @@
                         <button id="save-gemini-key-btn" class="btn-secondary" type="button">Save</button>
                     </div>
                     <p id="gemini-key-status" class="field-note">Used only in this browser for the explainable assistant.</p>
+                </div>
+            </div>
+
+            <div class="account-section">
+                <h4>VirusTotal Lookup</h4>
+                <div class="api-key-control">
+                    <label for="virustotal-api-key-input">VirusTotal API key</label>
+                    <div class="api-key-row">
+                        <input type="password" id="virustotal-api-key-input" placeholder="Optional API key">
+                        <button id="save-virustotal-key-btn" class="btn-secondary" type="button">Save</button>
+                    </div>
+                    <p id="virustotal-key-status" class="field-note">Used only for SHA-256 hash lookups. APK files are not uploaded.</p>
                 </div>
             </div>
 

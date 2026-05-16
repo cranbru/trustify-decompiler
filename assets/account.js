@@ -6,6 +6,7 @@
     const STORAGE_KEY_USER = 'trustify_user';
     const STORAGE_KEY_HISTORY = 'trustify_history';
     const STORAGE_KEY_GEMINI_API_KEY = 'trustify_gemini_api_key';
+    const STORAGE_KEY_VIRUSTOTAL_API_KEY = 'trustify_virustotal_api_key';
 
     const accountManager = {
         user: null,
@@ -15,6 +16,8 @@
             this.loadData();
             this.setupEventListeners();
             this.checkFirstTimeUser();
+            this.renderGeminiKeyState();
+            this.renderVirusTotalKeyState();
             this.renderHistory();
         },
 
@@ -53,6 +56,14 @@
             }
         },
 
+        getVirusTotalApiKey() {
+            try {
+                return localStorage.getItem(STORAGE_KEY_VIRUSTOTAL_API_KEY) || '';
+            } catch (e) {
+                return '';
+            }
+        },
+
         saveGeminiApiKey(apiKey) {
             const key = apiKey ? apiKey.trim() : '';
             try {
@@ -66,6 +77,23 @@
                 return true;
             } catch (e) {
                 alert('Could not save Gemini API key in this browser.');
+                return false;
+            }
+        },
+
+        saveVirusTotalApiKey(apiKey) {
+            const key = apiKey ? apiKey.trim() : '';
+            try {
+                if (key) {
+                    localStorage.setItem(STORAGE_KEY_VIRUSTOTAL_API_KEY, key);
+                } else {
+                    localStorage.removeItem(STORAGE_KEY_VIRUSTOTAL_API_KEY);
+                }
+                this.renderVirusTotalKeyState();
+                window.dispatchEvent(new CustomEvent('trustify:virustotal-key-updated'));
+                return true;
+            } catch (e) {
+                alert('Could not save VirusTotal API key in this browser.');
                 return false;
             }
         },
@@ -104,6 +132,7 @@
                 localStorage.removeItem(STORAGE_KEY_USER);
                 localStorage.removeItem(STORAGE_KEY_HISTORY);
                 localStorage.removeItem(STORAGE_KEY_GEMINI_API_KEY);
+                localStorage.removeItem(STORAGE_KEY_VIRUSTOTAL_API_KEY);
                 window.location.reload();
             }
         },
@@ -120,6 +149,7 @@
             const userNameElements = document.querySelectorAll('.display-user-name');
             userNameElements.forEach(el => el.textContent = this.user ? this.user.name : 'Guest');
             this.renderGeminiKeyState();
+            this.renderVirusTotalKeyState();
         },
 
         renderGeminiKeyState() {
@@ -134,6 +164,21 @@
                 keyStatus.textContent = hasKey
                     ? 'Gemini key saved locally. Save an empty value to remove it.'
                     : 'Used only in this browser for the explainable assistant.';
+            }
+        },
+
+        renderVirusTotalKeyState() {
+            const keyInput = document.getElementById('virustotal-api-key-input');
+            const keyStatus = document.getElementById('virustotal-key-status');
+            const hasKey = !!this.getVirusTotalApiKey();
+            if (keyInput) {
+                keyInput.value = '';
+                keyInput.placeholder = hasKey ? 'Saved locally' : 'Optional API key';
+            }
+            if (keyStatus) {
+                keyStatus.textContent = hasKey
+                    ? 'VirusTotal key saved locally. Save an empty value to remove it.'
+                    : 'Used only for SHA-256 hash lookups. APK files are not uploaded.';
             }
         },
 
@@ -232,6 +277,20 @@
                     if (e.key === 'Enter') {
                         e.preventDefault();
                         this.saveGeminiApiKey(geminiKeyInput.value);
+                    }
+                });
+            }
+
+            const saveVirusTotalKeyBtn = document.getElementById('save-virustotal-key-btn');
+            const virusTotalKeyInput = document.getElementById('virustotal-api-key-input');
+            if (saveVirusTotalKeyBtn && virusTotalKeyInput) {
+                saveVirusTotalKeyBtn.addEventListener('click', () => {
+                    this.saveVirusTotalApiKey(virusTotalKeyInput.value);
+                });
+                virusTotalKeyInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.saveVirusTotalApiKey(virusTotalKeyInput.value);
                     }
                 });
             }

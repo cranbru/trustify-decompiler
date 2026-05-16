@@ -647,6 +647,10 @@
         findings: current.findings || [],
         exportedComponents: current.exportedComponents || [],
       },
+      virusTotal:
+        window.VirusTotalLookup && typeof window.VirusTotalLookup.getResult === "function"
+          ? window.VirusTotalLookup.getResult()
+          : null,
     };
   }
 
@@ -1378,6 +1382,10 @@
     getSummary: function () {
       return current.summary;
     },
+    getSignature: function () {
+      return current.signature;
+    },
+    getReport: buildReportObject,
   };
 
   document.addEventListener("DOMContentLoaded", function () {

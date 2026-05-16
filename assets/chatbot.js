@@ -191,6 +191,7 @@
       strings: trimBlock(textFrom("values-strings"), 2000),
       securitySummary: "",
       securityFindings: trimBlock(textFrom("security-findings"), 4000),
+      virusTotal: trimBlock(textFrom("virustotal-details"), 2500),
       exportedComponents: trimBlock(textFrom("exported-components"), 3000),
       signature: trimBlock(textFrom("signature-details"), 2500),
     };
@@ -217,6 +218,7 @@
       "Signature: " + (context.signature || "not available"),
       "Permissions:\n" + (context.permissions || "not available"),
       "Security findings:\n" + (context.securityFindings || "not available"),
+      "VirusTotal:\n" + (context.virusTotal || "not available"),
       "Exported components:\n" + (context.exportedComponents || "not available"),
       "Activities:\n" + (context.activities || "not available"),
       "Services:\n" + (context.services || "not available"),
