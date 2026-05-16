@@ -11,6 +11,7 @@
   var ui = {};
   var messages = [];
   var isSending = false;
+  var useApkContext = true;
 
   function $(id) {
     return document.getElementById(id);
@@ -59,10 +60,55 @@
   function setSelectedModel(model) {
     var nextModel = MODELS[model] ? model : DEFAULT_MODEL;
     if (ui.modelSelect) ui.modelSelect.value = nextModel;
-    if (ui.modelLabel) ui.modelLabel.textContent = MODELS[nextModel];
+    if (ui.modelCurrent) ui.modelCurrent.textContent = MODELS[nextModel];
+    if (ui.modelOptions) {
+      ui.modelOptions.forEach(function (option) {
+        option.setAttribute("aria-selected", option.dataset.model === nextModel ? "true" : "false");
+      });
+    }
     try {
       localStorage.setItem(STORAGE_KEY_GEMINI_MODEL, nextModel);
     } catch (e) {}
+  }
+
+  function setModelMenuOpen(open) {
+    if (!ui.modelMenu || !ui.modelTrigger) return;
+    ui.modelMenu.hidden = !open;
+    ui.modelTrigger.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  function getApkReferenceName() {
+    return textFrom("app-label") || textFrom("file-name") || "Current APK";
+  }
+
+  function updateApkContextIcon() {
+    if (!ui.contextApkIcon) return;
+    var appIcon = $("app-icon");
+    var iconSrc = appIcon && appIcon.getAttribute("src") ? appIcon.getAttribute("src") : "";
+    if (iconSrc && appIcon.style.display !== "none") {
+      ui.contextApkIcon.src = iconSrc;
+      ui.contextApkIcon.hidden = false;
+    } else {
+      ui.contextApkIcon.removeAttribute("src");
+      ui.contextApkIcon.hidden = true;
+    }
+  }
+
+  function setApkContextEnabled(enabled) {
+    useApkContext = !!enabled;
+    if (ui.contextToggle) {
+      ui.contextToggle.setAttribute("aria-pressed", useApkContext ? "true" : "false");
+      ui.contextToggle.title = useApkContext ? "Remove APK context" : "Use current APK as reference";
+    }
+    if (ui.contextLabel) {
+      ui.contextLabel.textContent = useApkContext ? getApkReferenceName() : "General questions mode";
+    }
+    if (ui.input) {
+      ui.input.placeholder = useApkContext
+        ? "Ask about permissions, findings, or the manifest..."
+        : "Ask a general security or Android question...";
+    }
+    updateApkContextIcon();
   }
 
   function escapeHtml(value) {
@@ -72,6 +118,48 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  function renderInlineMarkdown(text) {
+    return escapeHtml(text)
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*([^*\n]+)\*/g, "<strong>$1</strong>");
+  }
+
+  function renderMarkdown(text) {
+    var lines = safeText(text).split(/\n/);
+    var html = [];
+    var inList = false;
+
+    lines.forEach(function (line) {
+      var trimmed = line.trim();
+      var bulletMatch = trimmed.match(/^[*-]\s+(.+)$/);
+
+      if (bulletMatch) {
+        if (!inList) {
+          html.push("<ul>");
+          inList = true;
+        }
+        html.push("<li>" + renderInlineMarkdown(bulletMatch[1]) + "</li>");
+        return;
+      }
+
+      if (inList) {
+        html.push("</ul>");
+        inList = false;
+      }
+
+      if (!trimmed) {
+        html.push("<br>");
+        return;
+      }
+
+      html.push("<p>" + renderInlineMarkdown(trimmed) + "</p>");
+    });
+
+    if (inList) html.push("</ul>");
+    return html.join("");
   }
 
   function textFrom(id) {
@@ -173,7 +261,7 @@
           "'><div class='ai-message__label'>" +
           (message.role === "user" ? "You" : "Assistant") +
           "</div><div class='ai-message__body'>" +
-          escapeHtml(message.text).replace(/\n/g, "<br>") +
+          renderMarkdown(message.text) +
           "</div></div>"
         );
       })
@@ -193,20 +281,28 @@
   }
 
   function buildGeminiPayload(userMessage) {
-    var context = collectScanContext();
+    var context = useApkContext ? collectScanContext() : null;
     var history = messages.slice(-8).map(function (message) {
       return {
         role: message.role === "user" ? "user" : "model",
         parts: [{ text: message.text }],
       };
     });
+    var instruction = useApkContext
+      ? "You are Trustify's explainable APK security assistant. Answer with practical, concise explanations grounded only in the provided analysis context. Explain why something matters, cite the exact signals you used, and call out uncertainty when data is missing. Do not claim the APK is safe or malicious with certainty. If there is no scan context yet, help the user understand what they can ask after analyzing an APK."
+      : "You are Trustify's AI assistant. The user has turned off APK context for this message, so answer general Android, APK, and security questions without referring to any current scan unless the user explicitly provides details. Keep answers practical and concise.";
+    var prompt = useApkContext
+      ? contextToPrompt(context) +
+        "\n\nUser question:\n" +
+        userMessage +
+        "\n\nAnswer in 3-6 short paragraphs or bullets. Include an 'Evidence used' line when you mention a risk."
+      : "User question:\n" + userMessage + "\n\nAnswer in 3-6 short paragraphs or bullets.";
 
     return {
       systemInstruction: {
         parts: [
           {
-            text:
-              "You are Trustify's explainable APK security assistant. Answer with practical, concise explanations grounded only in the provided analysis context. Explain why something matters, cite the exact signals you used, and call out uncertainty when data is missing. Do not claim the APK is safe or malicious with certainty. If there is no scan context yet, help the user understand what they can ask after analyzing an APK.",
+            text: instruction,
           },
         ],
       },
@@ -215,11 +311,7 @@
           role: "user",
           parts: [
             {
-              text:
-                contextToPrompt(context) +
-                "\n\nUser question:\n" +
-                userMessage +
-                "\n\nAnswer in 3-6 short paragraphs or bullets. Include an 'Evidence used' line when you mention a risk.",
+              text: prompt,
             },
           ],
         },
@@ -314,7 +406,13 @@
     ui.input = $("ai-chatbot-input");
     ui.send = $("ai-chatbot-send");
     ui.modelSelect = $("ai-chatbot-model");
-    ui.modelLabel = $("ai-chatbot-model-label");
+    ui.modelTrigger = $("ai-chatbot-model-trigger");
+    ui.modelCurrent = $("ai-chatbot-model-current");
+    ui.modelMenu = $("ai-chatbot-model-menu");
+    ui.modelOptions = Array.prototype.slice.call(document.querySelectorAll(".ai-chatbot__model-option"));
+    ui.contextToggle = $("ai-chatbot-context-toggle");
+    ui.contextLabel = $("ai-chatbot-context-label");
+    ui.contextApkIcon = $("ai-chatbot-context-apk-icon");
     ui.keyForm = $("ai-chatbot-key-form");
     ui.keyInput = $("ai-chatbot-key");
 
@@ -330,6 +428,41 @@
       setSelectedModel(getSelectedModel());
       ui.modelSelect.addEventListener("change", function () {
         setSelectedModel(ui.modelSelect.value);
+      });
+    }
+    if (ui.modelTrigger) {
+      ui.modelTrigger.addEventListener("click", function () {
+        setModelMenuOpen(ui.modelMenu.hidden);
+      });
+    }
+    if (ui.modelOptions) {
+      ui.modelOptions.forEach(function (option) {
+        option.addEventListener("click", function () {
+          setSelectedModel(option.dataset.model);
+          setModelMenuOpen(false);
+        });
+      });
+    }
+    document.addEventListener("click", function (event) {
+      if (ui.modelMenu && ui.modelTrigger && !ui.modelMenu.hidden && !event.target.closest(".ai-chatbot__model-picker")) {
+        setModelMenuOpen(false);
+      }
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") setModelMenuOpen(false);
+    });
+    if (ui.contextToggle) {
+      ui.contextToggle.addEventListener("click", function () {
+        setApkContextEnabled(!useApkContext);
+      });
+      setApkContextEnabled(useApkContext);
+      ["app-label", "file-name", "app-icon"].forEach(function (id) {
+        var target = $(id);
+        if (!target || typeof MutationObserver !== "function") return;
+        new MutationObserver(function () {
+          if (useApkContext) setApkContextEnabled(true);
+          else updateApkContextIcon();
+        }).observe(target, { attributes: true, childList: true, characterData: true, subtree: true });
       });
     }
     if (ui.input) {
