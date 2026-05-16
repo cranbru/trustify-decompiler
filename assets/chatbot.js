@@ -1,6 +1,11 @@
 (function () {
   var STORAGE_KEY_GEMINI_API_KEY = "trustify_gemini_api_key";
-  var MODEL = "gemini-2.5-flash";
+  var STORAGE_KEY_GEMINI_MODEL = "trustify_gemini_model";
+  var DEFAULT_MODEL = "gemini-2.5-flash";
+  var MODELS = {
+    "gemini-2.5-flash": "Gemini 2.5 Flash",
+    "gemini-2.5-flash-lite": "Gemini 2.5 Flash Lite",
+  };
   var API_BASE = "https://generativelanguage.googleapis.com/v1beta/models/";
 
   var ui = {};
@@ -40,6 +45,24 @@
       alert("Could not save Gemini API key in this browser.");
       return false;
     }
+  }
+  function getSelectedModel() {
+    var selected = ui.modelSelect ? ui.modelSelect.value : "";
+    if (MODELS[selected]) return selected;
+    try {
+      var stored = localStorage.getItem(STORAGE_KEY_GEMINI_MODEL) || "";
+      if (MODELS[stored]) return stored;
+    } catch (e) {}
+    return DEFAULT_MODEL;
+  }
+
+  function setSelectedModel(model) {
+    var nextModel = MODELS[model] ? model : DEFAULT_MODEL;
+    if (ui.modelSelect) ui.modelSelect.value = nextModel;
+    if (ui.modelLabel) ui.modelLabel.textContent = MODELS[nextModel];
+    try {
+      localStorage.setItem(STORAGE_KEY_GEMINI_MODEL, nextModel);
+    } catch (e) {}
   }
 
   function escapeHtml(value) {
@@ -162,7 +185,9 @@
     isSending = sending;
     if (ui.send) {
       ui.send.disabled = sending;
-      ui.send.textContent = sending ? "Thinking" : "Send";
+      ui.send.classList.toggle("ai-chatbot__send--loading", sending);
+      ui.send.setAttribute("aria-label", sending ? "Thinking" : "Send message");
+      ui.send.title = sending ? "Thinking" : "Send message";
     }
     if (ui.input) ui.input.disabled = sending;
   }
@@ -226,7 +251,8 @@
       throw new Error("Add a Gemini API key first, either here or in Account & History.");
     }
 
-    var response = await fetch(API_BASE + MODEL + ":generateContent?key=" + encodeURIComponent(key), {
+    var model = getSelectedModel();
+    var response = await fetch(API_BASE + model + ":generateContent?key=" + encodeURIComponent(key), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(buildGeminiPayload(userMessage)),
@@ -287,6 +313,8 @@
     ui.form = $("ai-chatbot-form");
     ui.input = $("ai-chatbot-input");
     ui.send = $("ai-chatbot-send");
+    ui.modelSelect = $("ai-chatbot-model");
+    ui.modelLabel = $("ai-chatbot-model-label");
     ui.keyForm = $("ai-chatbot-key-form");
     ui.keyInput = $("ai-chatbot-key");
 
@@ -298,6 +326,12 @@
     if (ui.close) ui.close.addEventListener("click", function () { setOpen(false); });
     if (ui.form) ui.form.addEventListener("submit", handleSubmit);
     if (ui.keyForm) ui.keyForm.addEventListener("submit", handleKeySubmit);
+    if (ui.modelSelect) {
+      setSelectedModel(getSelectedModel());
+      ui.modelSelect.addEventListener("change", function () {
+        setSelectedModel(ui.modelSelect.value);
+      });
+    }
     if (ui.input) {
       ui.input.addEventListener("keydown", function (event) {
         if (event.key === "Enter" && !event.shiftKey) {
